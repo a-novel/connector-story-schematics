@@ -1,7 +1,6 @@
-import { MockQueryClient } from "#/mocks/query_client";
-import { genericSetup } from "#/utils/setup";
-import { QueryWrapper } from "#/utils/wrapper";
-
+import { MockQueryClient } from "../../__test__/mocks/query_client";
+import { genericSetup } from "../../__test__/utils/setup";
+import { QueryWrapper } from "../../__test__/utils/wrapper";
 import {
   LoglinePreview,
   CreateLoglineForm,
@@ -10,8 +9,8 @@ import {
   Logline,
   GenerateLoglinesForm,
   LoglineIdea,
-} from "@/api";
-import { CreateLogline, ExpandLogline, GenerateLoglines, GetAllLoglines, GetLogline } from "@/hooks";
+} from "../api";
+import { CreateLogline, ExpandLogline, GenerateLoglines, GetAllLoglines, GetLogline } from "./index";
 
 import { act } from "react";
 

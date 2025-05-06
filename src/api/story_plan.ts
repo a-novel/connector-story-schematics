@@ -6,9 +6,9 @@ import {
   StoryPlanPreview,
   Token,
   UpdateStoryPlanForm,
-} from "@/api/bindings";
-import { apiPath, withAuthHeaders } from "@/api/common";
-import { InternalError, newErrorResponseMessage, NotFoundError, UnauthorizedError } from "@/api/errors";
+} from ".//bindings";
+import { apiPath, withAuthHeaders } from ".//common";
+import { InternalError, newErrorResponseMessage, NotFoundError, UnauthorizedError } from ".//errors";
 
 import { z } from "zod";
 

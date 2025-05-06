@@ -1,5 +1,4 @@
-import { genericSetup } from "#/utils/setup";
-
+import { genericSetup } from "../../__test__/utils/setup";
 import {
   createStoryPlan,
   CreateStoryPlanForm,
@@ -14,7 +13,7 @@ import {
   StoryPlanPreview,
   updateStoryPlan,
   UpdateStoryPlanForm,
-} from "@/api";
+} from "./index";
 
 import nock from "nock";
 import { describe, expect, it } from "vitest";
