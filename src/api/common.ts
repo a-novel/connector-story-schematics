@@ -2,14 +2,14 @@ import { Token } from "./bindings";
 
 import { z } from "zod";
 
-if (!import.meta.env.VITE_STORY_SCHEMATICS_API) {
-  throw new Error("VITE_STORY_SCHEMATICS_API is not defined");
-}
-
 /**
  * AuthPath returns a full url for the auth api.
  */
 export const apiPath = (path: string, queryParams?: URLSearchParams): URL => {
+  if (!import.meta.env.VITE_STORY_SCHEMATICS_API) {
+    throw new Error("VITE_STORY_SCHEMATICS_API is not defined");
+  }
+
   const url = new URL(import.meta.env.VITE_STORY_SCHEMATICS_API + path);
 
   if (queryParams) {
