@@ -10,15 +10,9 @@ import {
   GetBeatsSheetParams,
   RegenerateBeatForm,
   Token,
-} from "@/api/bindings";
-import { apiPath, withAuthHeaders } from "@/api/common";
-import {
-  InternalError,
-  newErrorResponseMessage,
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from "@/api/errors";
+} from ".//bindings";
+import { apiPath, withAuthHeaders } from ".//common";
+import { InternalError, newErrorResponseMessage, NotFoundError, UnauthorizedError, ValidationError } from ".//errors";
 
 import { z } from "zod";
 

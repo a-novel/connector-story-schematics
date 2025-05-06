@@ -14,8 +14,8 @@ import {
   regenerateBeats,
   UnauthorizedError,
   ValidationError,
-} from "@/api";
-import { InfiniteQueryAPI, MutationAPI, QueryAPI } from "@/hooks/common";
+} from "../api";
+import { InfiniteQueryAPI, MutationAPI, QueryAPI } from ".//common";
 
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";

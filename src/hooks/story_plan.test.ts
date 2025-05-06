@@ -1,7 +1,6 @@
-import { MockQueryClient } from "#/mocks/query_client";
-import { genericSetup } from "#/utils/setup";
-import { QueryWrapper } from "#/utils/wrapper";
-
+import { MockQueryClient } from "../../__test__/mocks/query_client";
+import { genericSetup } from "../../__test__/utils/setup";
+import { QueryWrapper } from "../../__test__/utils/wrapper";
 import {
   CreateStoryPlanForm,
   GetAllStoryPlansParams,
@@ -9,8 +8,8 @@ import {
   StoryPlanPreview,
   StoryPlan,
   UpdateStoryPlanForm,
-} from "@/api";
-import { CreateStoryPlan, GetAllStoryPlans, GetStoryPlan, UpdateStoryPlan } from "@/hooks";
+} from "../api";
+import { CreateStoryPlan, GetAllStoryPlans, GetStoryPlan, UpdateStoryPlan } from "./index";
 
 import { act } from "react";
 

@@ -1,5 +1,4 @@
-import { genericSetup } from "#/utils/setup";
-
+import { genericSetup } from "../../__test__/utils/setup";
 import {
   createBeatsSheet,
   expandBeat,
@@ -21,7 +20,7 @@ import {
   isNotFoundError,
   isUnauthorizedError,
   isValidationError,
-} from "@/api";
+} from "./index";
 
 import nock from "nock";
 import { describe, it, expect } from "vitest";

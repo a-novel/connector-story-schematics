@@ -1,7 +1,6 @@
-import { MockQueryClient } from "#/mocks/query_client";
-import { genericSetup } from "#/utils/setup";
-import { QueryWrapper } from "#/utils/wrapper";
-
+import { MockQueryClient } from "../../__test__/mocks/query_client";
+import { genericSetup } from "../../__test__/utils/setup";
+import { QueryWrapper } from "../../__test__/utils/wrapper";
 import {
   Beat,
   BeatsSheet,
@@ -13,7 +12,7 @@ import {
   GetAllBeatsSheetsParams,
   GetBeatsSheetParams,
   RegenerateBeatForm,
-} from "@/api";
+} from "../api";
 import {
   CreateBeatsSheet,
   ExpandBeat,
@@ -21,7 +20,7 @@ import {
   GetAllBeatsSheets,
   GetBeatsSheet,
   RegenerateBeats,
-} from "@/hooks";
+} from "./index";
 
 import { act } from "react";
 
