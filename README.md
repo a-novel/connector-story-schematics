@@ -36,5 +36,12 @@ pnpm add react @tanstack/react-query @a-novel/connector-story-schematics
 
 ## Extra steps
 
-This package requires the `VITE_STORY_SCHEMATICS_API` to be set in the environment. It must point to a valid instance
-of the [story-schematics api](https://github.com/a-novel/service-story-schematics).
+You need to call the init function once for the package to be ready for use:
+
+```ts
+import { init } from "@a-novel/connector-story-schematics";
+
+init({
+  baseURL: "https://story-schematics.example.com",
+});
+```
