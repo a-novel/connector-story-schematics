@@ -78,6 +78,8 @@ export const StoryPlanID = z.string().uuid();
  */
 export const BeatsSheetID = z.string().uuid();
 
+export const Lang = z.enum(["en", "fr"]);
+
 /**
  * A string that can be used as a URL slug.
  */
@@ -114,6 +116,7 @@ export const BeatsSheet = z.object({
   id: BeatsSheetID,
   loglineID: LoglineID,
   storyPlanID: StoryPlanID,
+  lang: Lang,
   content: z.array(Beat).min(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MIN).max(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MAX),
   createdAt: z
     .string()
@@ -122,11 +125,13 @@ export const BeatsSheet = z.object({
 });
 
 export const BeatsSheetIdea = z.object({
+  lang: Lang,
   content: z.array(Beat).min(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MIN).max(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MAX),
 });
 
 export const BeatsSheetPreview = z.object({
   id: BeatsSheetID,
+  lang: Lang,
   createdAt: z
     .string()
     .datetime()
@@ -140,6 +145,7 @@ export const Logline = z.object({
   id: LoglineID,
   userID: UserID,
   slug: Slug,
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.LOGLINE.NAME.MIN).max(BINDINGS_VALIDATION.LOGLINE.NAME.MAX),
   content: z.string().min(BINDINGS_VALIDATION.LOGLINE.CONTENT.MIN).max(BINDINGS_VALIDATION.LOGLINE.CONTENT.MAX),
   createdAt: z
@@ -150,6 +156,7 @@ export const Logline = z.object({
 
 export const LoglinePreview = z.object({
   slug: Slug,
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.LOGLINE.NAME.MIN).max(BINDINGS_VALIDATION.LOGLINE.NAME.MAX),
   content: z.string().min(BINDINGS_VALIDATION.LOGLINE.CONTENT.MIN).max(BINDINGS_VALIDATION.LOGLINE.CONTENT.MAX),
   createdAt: z
@@ -159,6 +166,7 @@ export const LoglinePreview = z.object({
 });
 
 export const LoglineIdea = z.object({
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.LOGLINE.NAME.MIN).max(BINDINGS_VALIDATION.LOGLINE.NAME.MAX),
   content: z.string().min(BINDINGS_VALIDATION.LOGLINE.CONTENT.MIN).max(BINDINGS_VALIDATION.LOGLINE.CONTENT.MAX),
 });
@@ -200,6 +208,7 @@ export const BeatDefinition = z
 export const StoryPlan = z.object({
   id: StoryPlanID,
   slug: Slug,
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
   description: z
     .string()
@@ -218,6 +227,7 @@ export const StoryPlan = z.object({
 export const StoryPlanPreview = z.object({
   id: StoryPlanID,
   slug: Slug,
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
   description: z
     .string()
@@ -230,6 +240,7 @@ export const StoryPlanPreview = z.object({
 });
 
 export const CreateBeatsSheetForm = z.object({
+  lang: Lang,
   loglineID: LoglineID,
   storyPlanID: StoryPlanID,
   content: z.array(Beat).min(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MIN).max(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MAX),
@@ -237,12 +248,14 @@ export const CreateBeatsSheetForm = z.object({
 
 export const CreateLoglineForm = z.object({
   slug: Slug,
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.LOGLINE.NAME.MIN).max(BINDINGS_VALIDATION.LOGLINE.NAME.MAX),
   content: z.string().min(BINDINGS_VALIDATION.LOGLINE.CONTENT.MIN).max(BINDINGS_VALIDATION.LOGLINE.CONTENT.MAX),
 });
 
 export const CreateStoryPlanForm = z.object({
   slug: Slug,
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
   description: z
     .string()
@@ -260,11 +273,13 @@ export const ExpandBeatForm = z.object({
 });
 
 export const GenerateBeatsSheetForm = z.object({
+  lang: Lang,
   loglineID: LoglineID,
   storyPlanID: StoryPlanID,
 });
 
 export const GenerateLoglinesForm = z.object({
+  lang: Lang,
   count: z
     .number()
     .min(BINDINGS_VALIDATION.GENERATE_LOGLINES.COUNT.MIN)
@@ -282,6 +297,7 @@ export const RegenerateBeatForm = z.object({
 
 export const UpdateStoryPlanForm = z.object({
   slug: Slug,
+  lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
   description: z
     .string()
