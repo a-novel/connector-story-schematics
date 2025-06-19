@@ -8,7 +8,6 @@ import {
   regenerateBeats,
   Beat,
   BeatsSheet,
-  BeatsSheetIdea,
   BeatsSheetPreview,
   CreateBeatsSheetForm,
   ExpandBeatForm,
@@ -20,6 +19,7 @@ import {
   isNotFoundError,
   isUnauthorizedError,
   isValidationError,
+  BeatsSheetIdea,
 } from "./index";
 
 import nock from "nock";
@@ -30,6 +30,7 @@ describe("create beats sheet", () => {
   let nockAPI: nock.Scope;
 
   const defaultForm: z.infer<typeof CreateBeatsSheetForm> = {
+    lang: "en",
     loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
     storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
     content: [
@@ -50,6 +51,7 @@ describe("create beats sheet", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof BeatsSheet> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       content: [
@@ -64,6 +66,7 @@ describe("create beats sheet", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       content: [
@@ -143,6 +146,7 @@ describe("get beats sheet", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof BeatsSheet> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       content: [
@@ -157,6 +161,7 @@ describe("get beats sheet", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       content: [
@@ -234,6 +239,7 @@ describe("get all beats sheets", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof BeatsSheetPreview>[] = [
       {
+        lang: "en",
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         createdAt: new Date("2022-01-01T00:00:00Z"),
       },
@@ -241,6 +247,7 @@ describe("get all beats sheets", () => {
 
     const rawRes = [
       {
+        lang: "en",
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         createdAt: "2022-01-01T00:00:00Z",
       },
@@ -287,6 +294,7 @@ describe("generate beats sheet", () => {
   let nockAPI: nock.Scope;
 
   const defaultForm: z.infer<typeof GenerateBeatsSheetForm> = {
+    lang: "en",
     loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
     storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
   };
@@ -299,6 +307,7 @@ describe("generate beats sheet", () => {
 
   it("returns successful response", async () => {
     const res: z.infer<typeof BeatsSheetIdea> = {
+      lang: "en",
       content: [
         {
           key: "beat-1",
@@ -366,6 +375,7 @@ describe("regenerate beats", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof BeatsSheet> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       content: [
@@ -380,6 +390,7 @@ describe("regenerate beats", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       content: [

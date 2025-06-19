@@ -24,6 +24,7 @@ describe("create story plan", () => {
 
   const defaultForm: z.infer<typeof CreateStoryPlanForm> = {
     slug: "my-story",
+    lang: "en",
     name: "My Story Plan",
     description: "A story plan for a hero's journey.",
     beats: [
@@ -47,6 +48,7 @@ describe("create story plan", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof StoryPlan> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       slug: "my-story",
       name: "My Story Plan",
       description: "A story plan for a hero's journey.",
@@ -65,6 +67,7 @@ describe("create story plan", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       slug: "my-story",
       name: "My Story Plan",
       description: "A story plan for a hero's journey.",
@@ -116,6 +119,7 @@ describe("update story plan", () => {
   let nockAPI: nock.Scope;
 
   const defaultForm: z.infer<typeof UpdateStoryPlanForm> = {
+    lang: "en",
     slug: "my-story",
     name: "My Story Plan",
     description: "A story plan for a hero's journey.",
@@ -140,6 +144,7 @@ describe("update story plan", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof StoryPlan> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       slug: "my-story",
       name: "My Story Plan",
       description: "A story plan for a hero's journey.",
@@ -158,6 +163,7 @@ describe("update story plan", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       slug: "my-story",
       name: "My Story Plan",
       description: "A story plan for a hero's journey.",
@@ -232,6 +238,7 @@ describe("get story plan", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof StoryPlan> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       slug: "my-story",
       name: "My Story Plan",
       description: "A story plan for a hero's journey.",
@@ -250,6 +257,7 @@ describe("get story plan", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       slug: "my-story",
       name: "My Story Plan",
       description: "A story plan for a hero's journey.",
@@ -332,6 +340,7 @@ describe("get all story plans", () => {
     const res: z.infer<typeof StoryPlanPreview>[] = [
       {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+        lang: "en",
         slug: "my-story",
         name: "My Story Plan",
         description: "A story plan for a hero's journey.",
@@ -342,6 +351,7 @@ describe("get all story plans", () => {
     const rawRes = [
       {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+        lang: "en",
         slug: "my-story",
         name: "My Story Plan",
         description: "A story plan for a hero's journey.",

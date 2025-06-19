@@ -25,6 +25,7 @@ describe("create logline", () => {
   let nockAPI: nock.Scope;
 
   const defaultForm: z.infer<typeof CreateLoglineForm> = {
+    lang: "en",
     slug: "my-story",
     name: "My Story",
     content: "A story about a hero's journey.",
@@ -39,6 +40,7 @@ describe("create logline", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof Logline> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       slug: "my-story",
       name: "My Story",
@@ -48,6 +50,7 @@ describe("create logline", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       slug: "my-story",
       name: "My Story",
@@ -103,6 +106,7 @@ describe("get logline", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof Logline> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       slug: "my-story",
       name: "My Story",
@@ -112,6 +116,7 @@ describe("get logline", () => {
 
     const rawRes = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+      lang: "en",
       userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
       slug: "my-story",
       name: "My Story",
@@ -184,6 +189,7 @@ describe("get all loglines", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof LoglinePreview>[] = [
       {
+        lang: "en",
         slug: "my-story",
         name: "My Story",
         content: "A story about a hero's journey.",
@@ -193,6 +199,7 @@ describe("get all loglines", () => {
 
     const rawRes = [
       {
+        lang: "en",
         slug: "my-story",
         name: "My Story",
         content: "A story about a hero's journey.",
@@ -241,6 +248,7 @@ describe("generate loglines", () => {
   let nockAPI: nock.Scope;
 
   const defaultForm: z.infer<typeof GenerateLoglinesForm> = {
+    lang: "en",
     count: 5,
     theme: "fantasy",
   };
@@ -254,6 +262,7 @@ describe("generate loglines", () => {
   it("returns successful response", async () => {
     const res: z.infer<typeof LoglineIdea>[] = [
       {
+        lang: "en",
         name: "My Story",
         content: "A story about a hero's journey.",
       },
@@ -294,6 +303,7 @@ describe("expand logline", () => {
   let nockAPI: nock.Scope;
 
   const defaultForm: z.infer<typeof LoglineIdea> = {
+    lang: "en",
     name: "My Story",
     content: "A story about a hero's journey.",
   };
@@ -306,6 +316,7 @@ describe("expand logline", () => {
 
   it("returns successful response", async () => {
     const res: z.infer<typeof LoglineIdea> = {
+      lang: "en",
       name: "My Story",
       content: "A story about a hero's journey, with twists and turns that lead to unexpected outcomes.",
     };
