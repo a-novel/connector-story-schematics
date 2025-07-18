@@ -28,10 +28,13 @@ Create a `.npmrc` file in the root of your project if it doesn't exist, and make
 //npm.pkg.github.com/:_authToken=${YOUR_PERSONAL_ACCESS_TOKEN}
 ```
 
-Then, install the package using pnpm:
+Then, install the package (using pnpm):
 
 ```bash
-pnpm add react zod @tanstack/react-query @a-novel/connector-story-schematics
+# pnpm config set auto-install-peers true
+#  Or
+# pnpm config set auto-install-peers true --location project
+pnpm add @a-novel/connector-story-schematics
 ```
 
 ## Extra steps
