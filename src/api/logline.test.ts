@@ -1,12 +1,10 @@
-import { genericSetup } from "../../__test__/utils/setup";
+import { server } from "../../__test__/utils/setup";
 import {
   CreateLoglineForm,
   GenerateLoglinesForm,
   GetAllLoglinesParams,
   GetLoglineParams,
-  Logline,
   LoglineIdea,
-  LoglinePreview,
   isInternalError,
   isNotFoundError,
   isUnauthorizedError,
@@ -17,13 +15,13 @@ import {
   getLogline,
 } from "./index";
 
-import nock from "nock";
+import { http } from "@a-novel/nodelib/msw";
+
+import { HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 describe("create logline", () => {
-  let nockAPI: nock.Scope;
-
   const defaultForm: z.infer<typeof CreateLoglineForm> = {
     lang: "en",
     slug: "my-story",
@@ -31,323 +29,299 @@ describe("create logline", () => {
     content: "A story about a hero's journey.",
   };
 
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
-    },
-  });
-
-  it("returns successful response", async () => {
-    const res: z.infer<typeof Logline> = {
-      id: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      lang: "en",
-      userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      slug: "my-story",
-      name: "My Story",
-      content: "A story about a hero's journey.",
-      createdAt: new Date("2022-01-01T00:00:00Z"),
-    };
-
-    const rawRes = {
-      id: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      lang: "en",
-      userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      slug: "my-story",
-      name: "My Story",
-      content: "A story about a hero's journey.",
-      createdAt: "2022-01-01T00:00:00Z",
-    };
-
-    const nockLogline = nockAPI
-      .put("/logline", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(200, rawRes);
-
-    const apiRes = await createLogline("access-token", defaultForm);
-    expect(apiRes).toEqual(res);
-
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns unauthorized", async () => {
-    const nockLogline = nockAPI
-      .put("/logline", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(401, undefined);
-
-    const apiRes = await createLogline("access-token", defaultForm).catch((e) => e);
-    expect(isUnauthorizedError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns internal", async () => {
-    const nockLogline = nockAPI
-      .put("/logline", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(501, "crash");
-
-    const apiRes = await createLogline("access-token", defaultForm).catch((e) => e);
-    expect(isInternalError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
-});
-
-describe("get logline", () => {
-  let nockAPI: nock.Scope;
-
-  const defaultParams: z.infer<typeof GetLoglineParams> = {
-    id: "29f71c01-5ae1-4b01-b729-e17488538e15",
-    slug: "my-story",
-  };
-
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
-    },
-  });
-
-  it("returns successful response", async () => {
-    const res: z.infer<typeof Logline> = {
-      id: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      lang: "en",
-      userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      slug: "my-story",
-      name: "My Story",
-      content: "A story about a hero's journey.",
-      createdAt: new Date("2022-01-01T00:00:00Z"),
-    };
-
-    const rawRes = {
-      id: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      lang: "en",
-      userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-      slug: "my-story",
-      name: "My Story",
-      content: "A story about a hero's journey.",
-      createdAt: "2022-01-01T00:00:00Z",
-    };
-
-    const nockLogline = nockAPI
-      .get(`/logline?id=${defaultParams.id}&slug=${defaultParams.slug}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes);
-
-    const apiRes = await getLogline("access-token", defaultParams);
-    expect(apiRes).toEqual(res);
-
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns unauthorized", async () => {
-    const nockLogline = nockAPI
-      .get(`/logline?id=${defaultParams.id}&slug=${defaultParams.slug}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(401, undefined);
-
-    const apiRes = await getLogline("access-token", defaultParams).catch((e) => e);
-    expect(isUnauthorizedError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns not found", async () => {
-    const nockLogline = nockAPI
-      .get(`/logline?id=${defaultParams.id}&slug=${defaultParams.slug}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(404, undefined);
-
-    const apiRes = await getLogline("access-token", defaultParams).catch((e) => e);
-    expect(isNotFoundError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns internal", async () => {
-    const nockLogline = nockAPI
-      .get(`/logline?id=${defaultParams.id}&slug=${defaultParams.slug}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(501, "crash");
-
-    const apiRes = await getLogline("access-token", defaultParams).catch((e) => e);
-    expect(isInternalError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
-});
-
-describe("get all loglines", () => {
-  let nockAPI: nock.Scope;
-
-  const defaultParams: z.infer<typeof GetAllLoglinesParams> = {
-    limit: 100,
-  };
-
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
-    },
-  });
-
-  it("returns successful response", async () => {
-    const res: z.infer<typeof LoglinePreview>[] = [
-      {
+  const testCases = {
+    success: {
+      response: HttpResponse.json({
+        id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
+        userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
+        slug: "my-story",
+        name: "My Story",
+        content: "A story about a hero's journey.",
+        createdAt: "2022-01-01T00:00:00Z",
+      }),
+      expect: {
+        id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+        lang: "en",
+        userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
         slug: "my-story",
         name: "My Story",
         content: "A story about a hero's journey.",
         createdAt: new Date("2022-01-01T00:00:00Z"),
       },
-    ];
+      expectError: null,
+    },
+    unauthorized: {
+      response: HttpResponse.json(undefined, { status: 401 }),
+      expect: null,
+      expectError: isUnauthorizedError,
+    },
+    internal: {
+      response: HttpResponse.json("crash", { status: 501 }),
+      expect: null,
+      expectError: isInternalError,
+    },
+  };
 
-    const rawRes = [
-      {
+  for (const [key, { response, expect: expected, expectError }] of Object.entries(testCases)) {
+    it(`returns ${key} response`, async () => {
+      server.use(
+        http
+          .put("http://localhost:3000/logline")
+          .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+          .bodyJSON(defaultForm, HttpResponse.error())
+          .resolve(() => response)
+      );
+
+      const apiRes = await createLogline("access-token", defaultForm).catch((e) => e);
+
+      if (expected) {
+        expect(apiRes).toEqual(expected);
+      } else if (expectError) {
+        expect(expectError(apiRes)).toBe(true);
+      }
+    });
+  }
+});
+
+describe("get logline", () => {
+  const defaultParams: z.infer<typeof GetLoglineParams> = {
+    id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+    slug: "my-story",
+  };
+
+  const testCases = {
+    success: {
+      response: HttpResponse.json({
+        id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
+        userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
         slug: "my-story",
         name: "My Story",
         content: "A story about a hero's journey.",
         createdAt: "2022-01-01T00:00:00Z",
+      }),
+      expect: {
+        id: "29f71c01-5ae1-4b01-b729-e17488538e15",
+        lang: "en",
+        userID: "29f71c01-5ae1-4b01-b729-e17488538e15",
+        slug: "my-story",
+        name: "My Story",
+        content: "A story about a hero's journey.",
+        createdAt: new Date("2022-01-01T00:00:00Z"),
       },
-    ];
+      expectError: null,
+    },
+    unauthorized: {
+      response: HttpResponse.json(undefined, { status: 401 }),
+      expect: null,
+      expectError: isUnauthorizedError,
+    },
+    notFound: {
+      response: HttpResponse.json(undefined, { status: 404 }),
+      expect: null,
+      expectError: isNotFoundError,
+    },
+    internal: {
+      response: HttpResponse.json("crash", { status: 501 }),
+      expect: null,
+      expectError: isInternalError,
+    },
+  };
 
-    const nockLogline = nockAPI
-      .get(`/loglines?limit=${defaultParams.limit}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes);
+  for (const [key, { response, expect: expected, expectError }] of Object.entries(testCases)) {
+    it(`returns ${key} response`, async () => {
+      server.use(
+        http
+          .get("http://localhost:3000/logline")
+          .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+          .searchParams(
+            new URLSearchParams({ id: defaultParams.id!, slug: defaultParams.slug! }),
+            true,
+            HttpResponse.error()
+          )
+          .resolve(() => response)
+      );
 
-    const apiRes = await getAllLoglines("access-token", defaultParams);
-    expect(apiRes).toEqual(res);
+      const apiRes = await getLogline("access-token", defaultParams).catch((e) => e);
 
-    expect(nockLogline.isDone()).toBe(true);
-  });
+      if (expected) {
+        expect(apiRes).toEqual(expected);
+      } else if (expectError) {
+        expect(expectError(apiRes)).toBe(true);
+      }
+    });
+  }
+});
 
-  it("returns unauthorized", async () => {
-    const nockLogline = nockAPI
-      .get(`/loglines?limit=${defaultParams.limit}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(401, undefined);
+describe("get all loglines", () => {
+  const defaultParams: z.infer<typeof GetAllLoglinesParams> = {
+    limit: 100,
+  };
 
-    const apiRes = await getAllLoglines("access-token", defaultParams).catch((e) => e);
-    expect(isUnauthorizedError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
+  const testCases = {
+    success: {
+      response: HttpResponse.json([
+        {
+          lang: "en",
+          slug: "my-story",
+          name: "My Story",
+          content: "A story about a hero's journey.",
+          createdAt: "2022-01-01T00:00:00Z",
+        },
+      ]),
+      expect: [
+        {
+          lang: "en",
+          slug: "my-story",
+          name: "My Story",
+          content: "A story about a hero's journey.",
+          createdAt: new Date("2022-01-01T00:00:00Z"),
+        },
+      ],
+      expectError: null,
+    },
+    unauthorized: {
+      response: HttpResponse.json(undefined, { status: 401 }),
+      expect: null,
+      expectError: isUnauthorizedError,
+    },
+    internal: {
+      response: HttpResponse.json("crash", { status: 501 }),
+      expect: null,
+      expectError: isInternalError,
+    },
+  };
 
-  it("returns internal", async () => {
-    const nockLogline = nockAPI
-      .get(`/loglines?limit=${defaultParams.limit}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(501, "crash");
+  for (const [key, { response, expect: expected, expectError }] of Object.entries(testCases)) {
+    it(`returns ${key} response`, async () => {
+      server.use(
+        http
+          .get("http://localhost:3000/loglines")
+          .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+          .searchParams(new URLSearchParams({ limit: defaultParams.limit!.toString() }), true, HttpResponse.error())
+          .resolve(() => response)
+      );
 
-    const apiRes = await getAllLoglines("access-token", defaultParams).catch((e) => e);
-    expect(isInternalError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
+      const apiRes = await getAllLoglines("access-token", defaultParams).catch((e) => e);
+
+      if (expected) {
+        expect(apiRes).toEqual(expected);
+      } else if (expectError) {
+        expect(expectError(apiRes)).toBe(true);
+      }
+    });
+  }
 });
 
 describe("generate loglines", () => {
-  let nockAPI: nock.Scope;
-
   const defaultForm: z.infer<typeof GenerateLoglinesForm> = {
     lang: "en",
     count: 5,
     theme: "fantasy",
   };
 
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
+  const testCases = {
+    success: {
+      response: HttpResponse.json([
+        {
+          lang: "en",
+          name: "My Story",
+          content: "A story about a hero's journey.",
+        },
+      ]),
+      expect: [
+        {
+          lang: "en",
+          name: "My Story",
+          content: "A story about a hero's journey.",
+        },
+      ],
+      expectError: null,
     },
-  });
+    unauthorized: {
+      response: HttpResponse.json(undefined, { status: 401 }),
+      expect: null,
+      expectError: isUnauthorizedError,
+    },
+    internal: {
+      response: HttpResponse.json("crash", { status: 501 }),
+      expect: null,
+      expectError: isInternalError,
+    },
+  };
 
-  it("returns successful response", async () => {
-    const res: z.infer<typeof LoglineIdea>[] = [
-      {
-        lang: "en",
-        name: "My Story",
-        content: "A story about a hero's journey.",
-      },
-    ];
+  for (const [key, { response, expect: expected, expectError }] of Object.entries(testCases)) {
+    it(`returns ${key} response`, async () => {
+      server.use(
+        http
+          .post("http://localhost:3000/loglines/generate")
+          .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+          .bodyJSON(defaultForm, HttpResponse.error())
+          .resolve(() => response)
+      );
 
-    const nockLogline = nockAPI
-      .post("/loglines/generate", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(200, res);
+      const apiRes = await generateLoglines("access-token", defaultForm).catch((e) => e);
 
-    const apiRes = await generateLoglines("access-token", defaultForm);
-    expect(apiRes).toEqual(res);
-
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns unauthorized", async () => {
-    const nockLogline = nockAPI
-      .post("/loglines/generate", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(401, undefined);
-
-    const apiRes = await generateLoglines("access-token", defaultForm).catch((e) => e);
-    expect(isUnauthorizedError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns internal", async () => {
-    const nockLogline = nockAPI
-      .post("/loglines/generate", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(501, "crash");
-
-    const apiRes = await generateLoglines("access-token", defaultForm).catch((e) => e);
-    expect(isInternalError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
+      if (expected) {
+        expect(apiRes).toEqual(expected);
+      } else if (expectError) {
+        expect(expectError(apiRes)).toBe(true);
+      }
+    });
+  }
 });
 
 describe("expand logline", () => {
-  let nockAPI: nock.Scope;
-
   const defaultForm: z.infer<typeof LoglineIdea> = {
     lang: "en",
     name: "My Story",
     content: "A story about a hero's journey.",
   };
 
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
+  const testCases = {
+    success: {
+      response: HttpResponse.json({
+        lang: "en",
+        name: "My Story",
+        content: "A story about a hero's journey, with twists and turns that lead to unexpected outcomes.",
+      }),
+      expect: {
+        lang: "en",
+        name: "My Story",
+        content: "A story about a hero's journey, with twists and turns that lead to unexpected outcomes.",
+      },
+      expectError: null,
     },
-  });
+    unauthorized: {
+      response: HttpResponse.json(undefined, { status: 401 }),
+      expect: null,
+      expectError: isUnauthorizedError,
+    },
+    internal: {
+      response: HttpResponse.json("crash", { status: 501 }),
+      expect: null,
+      expectError: isInternalError,
+    },
+  };
 
-  it("returns successful response", async () => {
-    const res: z.infer<typeof LoglineIdea> = {
-      lang: "en",
-      name: "My Story",
-      content: "A story about a hero's journey, with twists and turns that lead to unexpected outcomes.",
-    };
+  for (const [key, { response, expect: expected, expectError }] of Object.entries(testCases)) {
+    it(`returns ${key} response`, async () => {
+      server.use(
+        http
+          .post("http://localhost:3000/logline/expand")
+          .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+          .bodyJSON(defaultForm, HttpResponse.error())
+          .resolve(() => response)
+      );
 
-    const nockLogline = nockAPI
-      .post("/logline/expand", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(200, res);
+      const apiRes = await expandLogline("access-token", defaultForm).catch((e) => e);
 
-    const apiRes = await expandLogline("access-token", defaultForm);
-    expect(apiRes).toEqual(res);
-
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns unauthorized", async () => {
-    const nockLogline = nockAPI
-      .post("/logline/expand", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(401, undefined);
-
-    const apiRes = await expandLogline("access-token", defaultForm).catch((e) => e);
-    expect(isUnauthorizedError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
-
-  it("returns internal", async () => {
-    const nockLogline = nockAPI
-      .post("/logline/expand", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(501, "crash");
-
-    const apiRes = await expandLogline("access-token", defaultForm).catch((e) => e);
-    expect(isInternalError(apiRes)).toBe(true);
-    expect(nockLogline.isDone()).toBe(true);
-  });
+      if (expected) {
+        expect(apiRes).toEqual(expected);
+      } else if (expectError) {
+        expect(expectError(apiRes)).toBe(true);
+      }
+    });
+  }
 });
