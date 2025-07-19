@@ -1,5 +1,5 @@
 import { MockQueryClient } from "../../__test__/mocks/query_client";
-import { genericSetup } from "../../__test__/utils/setup";
+import { server } from "../../__test__/utils/setup";
 import { QueryWrapper } from "../../__test__/utils/wrapper";
 import {
   CreateStoryPlanForm,
@@ -11,17 +11,17 @@ import {
 } from "../api";
 import { CreateStoryPlan, GetAllStoryPlans, GetStoryPlan, UpdateStoryPlan } from "./index";
 
+import { http } from "@a-novel/nodelib/msw";
+
 import { act } from "react";
 
 import { QueryClient } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import nock from "nock";
+import { HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 describe("create story plan", () => {
-  let nockAPI: nock.Scope;
-
   const defaultForm: z.infer<typeof CreateStoryPlanForm> = {
     lang: "en",
     slug: "my-story",
@@ -39,12 +39,6 @@ describe("create story plan", () => {
     ],
   };
 
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
-    },
-  });
-
   it("returns successful response", async () => {
     const res: z.infer<typeof StoryPlan> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
@@ -86,9 +80,13 @@ describe("create story plan", () => {
 
     const queryClient = new QueryClient(MockQueryClient);
 
-    const nockStoryPlan = nockAPI
-      .put("/story-plan", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(200, rawRes);
+    server.use(
+      http
+        .put("/story-plan")
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .bodyJSON(defaultForm, HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes))
+    );
 
     const hook = renderHook((accessToken) => CreateStoryPlan.useAPI(accessToken), {
       initialProps: "access-token",
@@ -99,14 +97,10 @@ describe("create story plan", () => {
       const apiRes = await hook.result.current.mutateAsync(defaultForm);
       expect(apiRes).toEqual(res);
     });
-
-    expect(nockStoryPlan.isDone()).toBe(true);
   });
 });
 
 describe("update story plan", () => {
-  let nockAPI: nock.Scope;
-
   const defaultForm: z.infer<typeof UpdateStoryPlanForm> = {
     lang: "en",
     slug: "my-story",
@@ -124,12 +118,6 @@ describe("update story plan", () => {
     ],
   };
 
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
-    },
-  });
-
   it("returns successful response", async () => {
     const res: z.infer<typeof StoryPlan> = {
       id: "29f71c01-5ae1-4b01-b729-e17488538e15",
@@ -171,9 +159,13 @@ describe("update story plan", () => {
 
     const queryClient = new QueryClient(MockQueryClient);
 
-    const nockStoryPlan = nockAPI
-      .patch("/story-plan", defaultForm, { reqheaders: { Authorization: "Bearer access-token" } })
-      .reply(200, rawRes);
+    server.use(
+      http
+        .patch("/story-plan")
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .bodyJSON(defaultForm, HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes))
+    );
 
     const hook = renderHook((accessToken) => UpdateStoryPlan.useAPI(accessToken), {
       initialProps: "access-token",
@@ -184,24 +176,14 @@ describe("update story plan", () => {
       const apiRes = await hook.result.current.mutateAsync(defaultForm);
       expect(apiRes).toEqual(res);
     });
-
-    expect(nockStoryPlan.isDone()).toBe(true);
   });
 });
 
 describe("get story plan", () => {
-  let nockAPI: nock.Scope;
-
   const defaultParams: z.infer<typeof GetStoryPlanParams> = {
     slug: "my-story",
     id: "29f71c01-5ae1-4b01-b729-e17488538e15",
   };
-
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
-    },
-  });
 
   it("returns successful response", async () => {
     const res: z.infer<typeof StoryPlan> = {
@@ -244,35 +226,29 @@ describe("get story plan", () => {
 
     const queryClient = new QueryClient(MockQueryClient);
 
-    const nockStoryPlan = nockAPI
-      .get(`/story-plan?id=${defaultParams.id}&slug=${defaultParams.slug}`, undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes);
+    server.use(
+      http
+        .get("/story-plan")
+        .searchParams(new URLSearchParams({ id: defaultParams.id!, slug: defaultParams.slug! }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes))
+    );
 
     const hook = renderHook(() => GetStoryPlan.useAPI("access-token", defaultParams), {
       wrapper: QueryWrapper(queryClient),
     });
 
     await waitFor(() => {
-      expect(nockStoryPlan.isDone()).toBe(true);
+      expect(hook.result.current.data).toEqual(res);
     });
-    expect(hook.result.current.data).toEqual(res);
   });
 });
 
 describe("get all story plans", () => {
-  let nockAPI: nock.Scope;
-
   const defaultParams: z.infer<typeof GetAllStoryPlansParams> = {
     limit: 1,
   };
 
-  genericSetup({
-    setNockAPI: (newScope) => {
-      nockAPI = newScope;
-    },
-  });
   const res: z.infer<typeof StoryPlanPreview>[] = [
     {
       lang: "en",
@@ -330,50 +306,51 @@ describe("get all story plans", () => {
   it("returns first page", async () => {
     const queryClient = new QueryClient(MockQueryClient);
 
-    const nockUsers = nockAPI
-      .get("/story-plans?limit=1", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(0, 1));
+    server.use(
+      http
+        .get("/story-plans")
+        .searchParams(new URLSearchParams({ limit: "1" }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes.slice(0, 1)))
+    );
 
     const hook = renderHook(() => GetAllStoryPlans.useAPI("access-token", defaultParams), {
       wrapper: QueryWrapper(queryClient),
     });
 
     await waitFor(() => {
-      expect(nockUsers.isDone()).toBe(true);
+      expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(0, 1));
     });
-
-    expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(0, 1));
   });
 
   it("returns all pages", async () => {
     const queryClient = new QueryClient(MockQueryClient);
 
-    let nockUsers = nockAPI
-      .get("/story-plans?limit=1", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(0, 1));
+    server.use(
+      http
+        .get("/story-plans")
+        .searchParams(new URLSearchParams({ limit: "1" }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes.slice(0, 1))),
+      http
+        .get("/story-plans")
+        .searchParams(new URLSearchParams({ limit: "1", offset: "1" }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes.slice(1, 2))),
+      http
+        .get("/story-plans")
+        .searchParams(new URLSearchParams({ limit: "1", offset: "2" }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes.slice(2, 3)))
+    );
 
     const hook = renderHook(() => GetAllStoryPlans.useAPI("access-token", defaultParams, { maxPages: 2 }), {
       wrapper: QueryWrapper(queryClient),
     });
 
     await waitFor(() => {
-      expect(nockUsers.isDone()).toBe(true);
       expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(0, 1));
     });
-
-    nockUsers = nockAPI
-      .get("/story-plans?limit=1&offset=1", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(1, 2))
-      .get("/story-plans?limit=1&offset=2", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(2, 3));
 
     await act(async () => {
       await hook.result.current.fetchNextPage();
@@ -381,38 +358,38 @@ describe("get all story plans", () => {
     });
 
     await waitFor(() => {
-      expect(nockUsers.isDone()).toBe(true);
+      expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(1, 3));
     });
-    expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(1, 3));
   });
 
   it("paginates backwards", async () => {
     const queryClient = new QueryClient(MockQueryClient);
 
-    let nockUsers = nockAPI
-      .get("/story-plans?limit=10", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(0, 1));
+    server.use(
+      http
+        .get("/story-plans")
+        .searchParams(new URLSearchParams({ limit: "10" }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes.slice(0, 1))),
+      http
+        .get("/story-plans")
+        .searchParams(new URLSearchParams({ limit: "10", offset: "1" }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes.slice(1, 2))),
+      http
+        .get("/story-plans")
+        .searchParams(new URLSearchParams({ limit: "10", offset: "2" }), true)
+        .headers(new Headers({ Authorization: "Bearer access-token" }), HttpResponse.error())
+        .resolve(() => HttpResponse.json(rawRes.slice(2, 3)))
+    );
 
     const hook = renderHook(() => GetAllStoryPlans.useAPI("access-token", { limit: 10 }, { maxPages: 2 }), {
       wrapper: QueryWrapper(queryClient),
     });
 
     await waitFor(() => {
-      expect(nockUsers.isDone()).toBe(true);
       expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(0, 1));
     });
-
-    nockUsers = nockAPI
-      .get("/story-plans?limit=10&offset=1", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(1, 2))
-      .get("/story-plans?limit=10&offset=2", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(2, 3));
 
     await act(async () => {
       await hook.result.current.fetchNextPage();
@@ -420,23 +397,15 @@ describe("get all story plans", () => {
     });
 
     await waitFor(() => {
-      expect(nockUsers.isDone()).toBe(true);
+      expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(1, 3));
     });
-    expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(1, 3));
-
-    nockUsers = nockAPI
-      .get("/story-plans?limit=10", undefined, {
-        reqheaders: { Authorization: "Bearer access-token" },
-      })
-      .reply(200, rawRes.slice(0, 1));
 
     await act(async () => {
       await hook.result.current.fetchPreviousPage();
     });
 
     await waitFor(() => {
-      expect(nockUsers.isDone()).toBe(true);
+      expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(0, 2));
     });
-    expect(hook.result.current.data?.pages.flat()).toEqual(res.slice(0, 2));
   });
 });
