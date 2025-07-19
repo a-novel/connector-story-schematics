@@ -61,22 +61,22 @@ export const Token = z.string();
 /**
  * The unique identifier of the user.
  */
-export const UserID = z.string().uuid();
+export const UserID = z.uuid();
 
 /**
  * The unique identifier of the logline.
  */
-export const LoglineID = z.string().uuid();
+export const LoglineID = z.uuid();
 
 /**
  * The unique identifier of the story plan.
  */
-export const StoryPlanID = z.string().uuid();
+export const StoryPlanID = z.uuid();
 
 /**
  * The unique identifier of the beats sheet.
  */
-export const BeatsSheetID = z.string().uuid();
+export const BeatsSheetID = z.uuid();
 
 export const Lang = z.enum(["en", "fr"]);
 
@@ -118,10 +118,7 @@ export const BeatsSheet = z.object({
   storyPlanID: StoryPlanID,
   lang: Lang,
   content: z.array(Beat).min(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MIN).max(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MAX),
-  createdAt: z
-    .string()
-    .datetime()
-    .transform((value) => new Date(value)),
+  createdAt: z.iso.datetime().transform((value) => new Date(value)),
 });
 
 export const BeatsSheetIdea = z.object({
@@ -132,10 +129,7 @@ export const BeatsSheetIdea = z.object({
 export const BeatsSheetPreview = z.object({
   id: BeatsSheetID,
   lang: Lang,
-  createdAt: z
-    .string()
-    .datetime()
-    .transform((value) => new Date(value)),
+  createdAt: z.iso.datetime().transform((value) => new Date(value)),
 });
 
 /**
@@ -148,10 +142,7 @@ export const Logline = z.object({
   lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.LOGLINE.NAME.MIN).max(BINDINGS_VALIDATION.LOGLINE.NAME.MAX),
   content: z.string().min(BINDINGS_VALIDATION.LOGLINE.CONTENT.MIN).max(BINDINGS_VALIDATION.LOGLINE.CONTENT.MAX),
-  createdAt: z
-    .string()
-    .datetime()
-    .transform((value) => new Date(value)),
+  createdAt: z.iso.datetime().transform((value) => new Date(value)),
 });
 
 export const LoglinePreview = z.object({
@@ -159,10 +150,7 @@ export const LoglinePreview = z.object({
   lang: Lang,
   name: z.string().min(BINDINGS_VALIDATION.LOGLINE.NAME.MIN).max(BINDINGS_VALIDATION.LOGLINE.NAME.MAX),
   content: z.string().min(BINDINGS_VALIDATION.LOGLINE.CONTENT.MIN).max(BINDINGS_VALIDATION.LOGLINE.CONTENT.MAX),
-  createdAt: z
-    .string()
-    .datetime()
-    .transform((value) => new Date(value)),
+  createdAt: z.iso.datetime().transform((value) => new Date(value)),
 });
 
 export const LoglineIdea = z.object({
@@ -218,10 +206,7 @@ export const StoryPlan = z.object({
     .array(BeatDefinition)
     .min(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MIN)
     .max(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MAX),
-  createdAt: z
-    .string()
-    .datetime()
-    .transform((value) => new Date(value)),
+  createdAt: z.iso.datetime().transform((value) => new Date(value)),
 });
 
 export const StoryPlanPreview = z.object({
@@ -233,10 +218,7 @@ export const StoryPlanPreview = z.object({
     .string()
     .min(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MIN)
     .max(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MAX),
-  createdAt: z
-    .string()
-    .datetime()
-    .transform((value) => new Date(value)),
+  createdAt: z.iso.datetime().transform((value) => new Date(value)),
 });
 
 export const CreateBeatsSheetForm = z.object({
