@@ -5,7 +5,5 @@ gitChecks: false
 onlyBuiltDependencies:
   - esbuild
 
-dedupePeerDependents: true
-
 packages:
   - "."
