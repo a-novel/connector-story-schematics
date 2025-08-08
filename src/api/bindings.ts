@@ -25,18 +25,9 @@ export const BINDINGS_VALIDATION = {
     MIN_SCENES: { MIN: 0, MAX: 10 },
     MAX_SCENES: { MIN: 0, MAX: 10 },
   },
-  STORY_PLAN: {
-    NAME: { MIN: 1, MAX: 512 },
-    DESCRIPTION: { MIN: 1, MAX: 4096 },
-    BEATS: { MIN: 1, MAX: 128 },
-  },
   GENERATE_LOGLINES: {
     COUNT: { MIN: 1, MAX: 10 },
     THEME: { MIN: 1, MAX: 16384 },
-  },
-  STORY_PLANS: {
-    LIMIT: { MIN: 1, MAX: 100 },
-    OFFSET: { MIN: 0 },
   },
   LOGLINES: {
     LIMIT: { MIN: 1, MAX: 100 },
@@ -67,11 +58,6 @@ export const UserID = z.uuid();
  * The unique identifier of the logline.
  */
 export const LoglineID = z.uuid();
-
-/**
- * The unique identifier of the story plan.
- */
-export const StoryPlanID = z.uuid();
 
 /**
  * The unique identifier of the beats sheet.
@@ -115,7 +101,6 @@ export const Beat = z.object({
 export const BeatsSheet = z.object({
   id: BeatsSheetID,
   loglineID: LoglineID,
-  storyPlanID: StoryPlanID,
   lang: Lang,
   content: z.array(Beat).min(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MIN).max(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MAX),
   createdAt: z.iso.datetime().transform((value) => new Date(value)),
@@ -189,42 +174,9 @@ export const BeatDefinition = z
   })
   .refine((data) => data.minScenes <= data.maxScenes);
 
-/**
- * A story plan structures the output of the story schematics service. It describes the different beats of a story,
- * controlling its final shape.
- */
-export const StoryPlan = z.object({
-  id: StoryPlanID,
-  slug: Slug,
-  lang: Lang,
-  name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
-  description: z
-    .string()
-    .min(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MAX),
-  beats: z
-    .array(BeatDefinition)
-    .min(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MAX),
-  createdAt: z.iso.datetime().transform((value) => new Date(value)),
-});
-
-export const StoryPlanPreview = z.object({
-  id: StoryPlanID,
-  slug: Slug,
-  lang: Lang,
-  name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
-  description: z
-    .string()
-    .min(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MAX),
-  createdAt: z.iso.datetime().transform((value) => new Date(value)),
-});
-
 export const CreateBeatsSheetForm = z.object({
   lang: Lang,
   loglineID: LoglineID,
-  storyPlanID: StoryPlanID,
   content: z.array(Beat).min(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MIN).max(BINDINGS_VALIDATION.BEATS_SHEET.BEATS.MAX),
 });
 
@@ -235,20 +187,6 @@ export const CreateLoglineForm = z.object({
   content: z.string().min(BINDINGS_VALIDATION.LOGLINE.CONTENT.MIN).max(BINDINGS_VALIDATION.LOGLINE.CONTENT.MAX),
 });
 
-export const CreateStoryPlanForm = z.object({
-  slug: Slug,
-  lang: Lang,
-  name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
-  description: z
-    .string()
-    .min(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MAX),
-  beats: z
-    .array(BeatDefinition)
-    .min(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MAX),
-});
-
 export const ExpandBeatForm = z.object({
   beatsSheetID: BeatsSheetID,
   targetKey: BeatKey,
@@ -257,7 +195,6 @@ export const ExpandBeatForm = z.object({
 export const GenerateBeatsSheetForm = z.object({
   lang: Lang,
   loglineID: LoglineID,
-  storyPlanID: StoryPlanID,
 });
 
 export const GenerateLoglinesForm = z.object({
@@ -277,37 +214,9 @@ export const RegenerateBeatForm = z.object({
   regenerateKeys: BeatKey.array(),
 });
 
-export const UpdateStoryPlanForm = z.object({
-  slug: Slug,
-  lang: Lang,
-  name: z.string().min(BINDINGS_VALIDATION.STORY_PLAN.NAME.MIN).max(BINDINGS_VALIDATION.STORY_PLAN.NAME.MAX),
-  description: z
-    .string()
-    .min(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLAN.DESCRIPTION.MAX),
-  beats: z
-    .array(BeatDefinition)
-    .min(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLAN.BEATS.MAX),
-});
-
 // =====================================================================================================================
 // PARAMETERS
 // =====================================================================================================================
-
-export const GetStoryPlanParams = z.object({
-  id: StoryPlanID.optional(),
-  slug: Slug.optional(),
-});
-
-export const GetAllStoryPlansParams = z.object({
-  limit: z
-    .number()
-    .min(BINDINGS_VALIDATION.STORY_PLANS.LIMIT.MIN)
-    .max(BINDINGS_VALIDATION.STORY_PLANS.LIMIT.MAX)
-    .optional(),
-  offset: z.number().min(BINDINGS_VALIDATION.STORY_PLANS.OFFSET.MIN).optional(),
-});
 
 export const GetLoglineParams = z.object({
   id: LoglineID.optional(),
