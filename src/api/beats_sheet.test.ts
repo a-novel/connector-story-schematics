@@ -28,7 +28,6 @@ describe("create beats sheet", () => {
   const defaultForm: z.infer<typeof CreateBeatsSheetForm> = {
     lang: "en",
     loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-    storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
     content: [
       {
         key: "beat-1",
@@ -44,7 +43,6 @@ describe("create beats sheet", () => {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
         loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-        storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
         content: [
           {
             key: "beat-1",
@@ -58,7 +56,7 @@ describe("create beats sheet", () => {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
         loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-        storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
+
         content: [
           {
             key: "beat-1",
@@ -124,7 +122,7 @@ describe("get beats sheet", () => {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
         loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-        storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
+
         content: [
           {
             key: "beat-1",
@@ -138,7 +136,7 @@ describe("get beats sheet", () => {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
         loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-        storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
+
         content: [
           {
             key: "beat-1",
@@ -248,7 +246,6 @@ describe("generate beats sheet", () => {
   const defaultForm: z.infer<typeof GenerateBeatsSheetForm> = {
     lang: "en",
     loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-    storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
   };
 
   const testCases = {
@@ -325,7 +322,7 @@ describe("regenerate beats", () => {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
         loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-        storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
+
         content: [
           {
             key: "beat-1",
@@ -339,7 +336,7 @@ describe("regenerate beats", () => {
         id: "29f71c01-5ae1-4b01-b729-e17488538e15",
         lang: "en",
         loglineID: "29f71c01-5ae1-4b01-b729-e17488538e15",
-        storyPlanID: "29f71c01-5ae1-4b01-b729-e17488538e15",
+
         content: [
           {
             key: "beat-1",
